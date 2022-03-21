@@ -6,9 +6,22 @@
 #define MAX_NUMBER_TOKENS 1000
 #define MAX_IDENT_LEN 11
 #define MAX_NUMBER_LEN 5
+#define NUM_INDENTIFIERS 10
 
 lexeme *list;
-int lex_index;
+int lex_index, char_index;
+char reserved_words[NUM_INDENTIFIERS][MAX_IDENT_LEN] = {
+    {"var"},
+    {"procedure"},
+    {"call"},
+    {"begin"},
+    {"end"},
+    {"if"},
+    {"do"},
+    {"while"},
+    {"read"},
+    {"write"},
+};
 
 int alphatoken();
 int numbertoken();
@@ -22,6 +35,36 @@ lexeme *lexanalyzer(char *input, int printFlag)
 {
     list = malloc(sizeof(lexeme) * MAX_NUMBER_TOKENS);
     lex_index = 0;
+    char_index = 0;
+
+    while (input[char_index] != EOF)
+    {
+        if (isspace(input[char_index]))
+        {
+            continue;
+        }
+        else if (iscntrl(input[char_index]))
+        {
+            continue;
+        }
+        else if (isdigit(input))
+        {
+            numbertoken(input);
+        }
+        else if (isalpha(input))
+        {
+            alphatoken(input);
+        }
+        else if (input[char_index] == '/')
+        {
+            comment();
+        }
+        else
+        {
+            symboltoken(input);
+        }
+        char_index++;
+    }
 
     if (printFlag)
         printtokens();
