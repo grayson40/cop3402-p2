@@ -255,7 +255,15 @@ int symboltoken(char *input)
         break;
 
     case '=':
-        list[lex_index++].type = eqlsym;
+        if (input[char_index + 1] == '=')
+        {
+            list[lex_index++].type = eqlsym;
+        }
+        else
+        {
+            printlexerror(4);
+            return 0;
+        }
         break;
 
     case '<':
