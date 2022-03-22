@@ -55,10 +55,6 @@ lexeme *lexanalyzer(char *input, int printFlag)
         {
             alphatoken(input);
         }
-        else if (input[char_index] == '/')
-        {
-            comment();
-        }
         else
         {
             symboltoken(input);
@@ -305,7 +301,14 @@ int symboltoken(char *input)
         break;
 
     case '/':
-        list[lex_index++].type = divsym;
+        if (input[char_index + 1] == '/')
+        {
+            comment(input);
+        }
+        else
+        {
+            list[lex_index++].type = divsym;
+        }
         break;
 
     case '%':
@@ -315,5 +318,18 @@ int symboltoken(char *input)
     default:
         printlexerror(4);
         break;
+    }
+}
+
+int comment(char *input)
+{
+    char buffer[MAX_NUMBER_TOKENS];
+    char curr_char = input[char_index + 1];
+    int index = 0;
+    // Loop until
+    while (curr_char != '\n' || curr_char != '\r')
+    {
+        curr_char = input[char_index++];
+        buffer[index] = curr_char;
     }
 }
