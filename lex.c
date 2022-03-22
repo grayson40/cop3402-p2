@@ -205,3 +205,107 @@ void printlexerror(int type)
     free(list);
     return;
 }
+
+int symboltoken(char *input)
+{
+    char curr_char = input[char_index];
+    switch (curr_char)
+    {
+    case '.':
+        list[lex_index++].type = periodsym;
+        break;
+
+    case '[':
+        list[lex_index++].type = lbracketsym;
+        break;
+
+    case ']':
+        list[lex_index++].type = rbracketsym;
+        break;
+
+    case ',':
+        list[lex_index++].type = commasym;
+        break;
+
+    case ';':
+        list[lex_index++].type = semicolonsym;
+        break;
+
+    case '?':
+        list[lex_index++].type = questionsym;
+        break;
+
+    case ':':
+        if (input[char_index + 1] == '=')
+        {
+            list[lex_index++].type = assignsym;
+        }
+        else
+        {
+            list[lex_index++].type = colonsym;
+        }
+        break;
+
+    case '(':
+        list[lex_index++].type = lparenthesissym;
+        break;
+
+    case ')':
+        list[lex_index++].type = rparenthesissym;
+        break;
+
+    case '=':
+        list[lex_index++].type = eqlsym;
+        break;
+
+    case '<':
+        if (input[char_index + 1] == '>')
+        {
+            list[lex_index++].type = neqsym;
+        }
+        else if (input[char_index + 1] == '=')
+        {
+            list[lex_index++].type = leqsym;
+        }
+        else
+        {
+            list[lex_index++].type = lsssym;
+        }
+        break;
+
+    case '>':
+        if (input[char_index + 1] == '=')
+        {
+            list[lex_index++].type = geqsym;
+        }
+        else
+        {
+            list[lex_index++].type = gtrsym;
+        }
+        break;
+
+    case '+':
+        list[lex_index++].type = addsym;
+        break;
+
+    case '-':
+        list[lex_index++].type = subsym;
+        break;
+
+    case '*':
+        list[lex_index++].type = multsym;
+        break;
+
+    case '/':
+        list[lex_index++].type = divsym;
+        break;
+
+    case '%':
+        list[lex_index++].type = modsym;
+        break;
+
+    default:
+        printlexerror(4);
+        break;
+    }
+}
