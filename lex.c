@@ -23,10 +23,10 @@ char reserved_words[NUM_INDENTIFIERS][MAX_IDENT_LEN] = {
     {"write"},
 };
 
-int alphatoken();
+int alphatoken(char *input);
 int numbertoken();
 int symboltoken();
-int comment();
+void comment(char *input);
 int reservedcheck(char *buffer);
 void printlexerror(int type);
 void printtokens();
@@ -47,19 +47,25 @@ lexeme *lexanalyzer(char *input, int printFlag)
         {
             continue;
         }
-        else if (isdigit(input))
+        else if (isdigit(input[char_index]))
         {
             numbertoken(input);
         }
-        else if (isalpha(input))
+        else if (isalpha(input[char_index]))
         {
-            alphatoken(input);
+            if(alphatoken(input)==-1)
+            {
+                exit(0);
+            }
+            
         }
         else
         {
             symboltoken(input);
         }
-        char_index++;
+        if(input[char_index] != EOF){
+            char_index++;
+        }
     }
 
     if (printFlag)
@@ -235,6 +241,7 @@ int symboltoken(char *input)
         if (input[char_index + 1] == '=')
         {
             list[lex_index++].type = assignsym;
+            char_index++;
         }
         else
         {
@@ -254,6 +261,7 @@ int symboltoken(char *input)
         if (input[char_index + 1] == '=')
         {
             list[lex_index++].type = eqlsym;
+            char_index++;
         }
         else
         {
@@ -266,10 +274,12 @@ int symboltoken(char *input)
         if (input[char_index + 1] == '>')
         {
             list[lex_index++].type = neqsym;
+            char_index++;
         }
         else if (input[char_index + 1] == '=')
         {
             list[lex_index++].type = leqsym;
+            char_index++;
         }
         else
         {
@@ -281,6 +291,7 @@ int symboltoken(char *input)
         if (input[char_index + 1] == '=')
         {
             list[lex_index++].type = geqsym;
+            char_index++;
         }
         else
         {
@@ -303,6 +314,7 @@ int symboltoken(char *input)
     case '/':
         if (input[char_index + 1] == '/')
         {
+            char_index = char_index + 2;
             comment(input);
         }
         else
@@ -321,15 +333,116 @@ int symboltoken(char *input)
     }
 }
 
-int comment(char *input)
+void comment(char *input)
 {
-    char buffer[MAX_NUMBER_TOKENS];
-    char curr_char = input[char_index + 1];
-    int index = 0;
-    // Loop until
-    while (curr_char != '\n' || curr_char != '\r')
+    char curr_char = input[char_index];
+    // Loop until new line or end of file
+    while (curr_char != '\n' || curr_char != '\r\n' || curr_char != '\0')
     {
-        curr_char = input[char_index++];
-        buffer[index] = curr_char;
+        char_index++;
+        curr_char = input[char_index];
     }
+}
+
+int alphatoken(char *input)
+{
+    //we know that the first char is alpha
+    //so, simply place it into the buffer
+    int index=0;
+    char buffer[MAX_IDENT_LEN+1];
+    buffer[index] = input[char_index];
+
+    //update pointers
+    index++;
+    char_index++;
+
+    //get the next char
+    char curr_char = input[char_index];
+
+    //loop while we find alpha or digit characters
+    //and while we have not exceeded the identifier length
+    while ((isalpha(curr_char) || isdigit(curr_char)) && index < 11)
+    {
+        buffer[index] = curr_char;
+        index++;
+        char_index++;
+        curr_char = input[char_index];
+    }
+
+    //check if the current char is digit or alpha and if it exceeded the length of the identifier
+    //if yes, then print lex error for identifier length
+    if((isalpha(curr_char) || isdigit(curr_char)) && index >= 11)
+    {
+        printlexerror(3);
+        return -1;
+    }
+
+    //check if it is a reserved word
+    if(reservedcheck(buffer)==0)
+    {
+        return 0;
+    }
+
+    //it is not a reserved word
+    //so, store identifier
+    list[lex_index].type = identsym;
+    strcpy(list[lex_index++].name, buffer);
+
+    return 0;
+}
+
+int reservedcheck(char *buffer)
+{
+    //loop through all possible reserved words
+    //if it matches, assign the type and return 0
+    //else, return -1
+    for(int i=0; i<10; i++)
+    {
+        if(strcmp(buffer, reserved_words[i]) == 0)
+        {
+            if(i==0)
+            {
+                list[lex_index++].type = varsym;
+            }
+            else if(i==1)
+            {
+                list[lex_index++].type = procsym;
+            }
+            else if(i==2)
+            {
+                list[lex_index++].type = callsym;
+            }
+            else if(i==3)
+            {
+                list[lex_index++].type = beginsym;
+            }
+            else if(i==4)
+            {
+                list[lex_index++].type = endsym;
+            }
+            else if(i==5)
+            {
+                list[lex_index++].type = ifsym;
+            }
+            else if(i==6)
+            {
+                list[lex_index++].type = dosym;
+            }
+            else if(i==7)
+            {
+                list[lex_index++].type = whilesym;
+            }
+            else if(i==8)
+            {
+                list[lex_index++].type = readsym;
+            }
+            else if(i==9)
+            {
+                list[lex_index++].type = writesym;
+            }
+            return 0;
+        }
+    }
+
+    return -1;
 }
