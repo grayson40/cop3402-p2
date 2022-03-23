@@ -346,7 +346,7 @@ void comment(char *input)
 {
     char curr_char = input[char_index];
     // Loop until new line or end of file
-    while (curr_char != '\n' || curr_char != '\r\n' || curr_char != '\0')
+    while (curr_char != '\n' || (input[char_index] != '\r' && input[char_index + 1] != '\n') || curr_char != '\0')
     {
         char_index++;
         curr_char = input[char_index];
@@ -499,8 +499,9 @@ int numbertoken(char *input)
 
     //it is a valid number
     //so, store number
+    int ans = atoi(buffer);
     list[lex_index].type = numbersym;
-    strcpy(list[lex_index++].value, buffer);
+    list[lex_index++].value = ans;
 
     return 0;
     
