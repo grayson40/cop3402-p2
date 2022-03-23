@@ -37,7 +37,7 @@ lexeme *lexanalyzer(char *input, int printFlag)
     lex_index = 0;
     char_index = 0;
 
-    while (input[char_index] != EOF)
+    while (input[char_index] != '\0')
     {
         if (isspace(input[char_index]))
         {
