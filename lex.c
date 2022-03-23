@@ -24,8 +24,8 @@ char reserved_words[NUM_INDENTIFIERS][MAX_IDENT_LEN] = {
 };
 
 int alphatoken(char *input);
-int numbertoken();
-int symboltoken();
+int numbertoken(char *input);
+int symboltoken(char *input);
 void comment(char *input);
 int reservedcheck(char *buffer);
 void printlexerror(int type);
@@ -49,19 +49,25 @@ lexeme *lexanalyzer(char *input, int printFlag)
         }
         else if (isdigit(input[char_index]))
         {
-            numbertoken(input);
+            if(numbertoken(input)==-1)
+            {
+                return 0;
+            }
         }
         else if (isalpha(input[char_index]))
         {
             if(alphatoken(input)==-1)
             {
-                exit(0);
+                return 0;
             }
             
         }
         else
         {
-            symboltoken(input);
+            if(symboltoken(input)==-1)
+            {
+                return 0;
+            }
         }
         if(input[char_index] != EOF){
             char_index++;
@@ -266,7 +272,7 @@ int symboltoken(char *input)
         else
         {
             printlexerror(4);
-            return 0;
+            return -1;
         }
         break;
 
@@ -329,8 +335,11 @@ int symboltoken(char *input)
 
     default:
         printlexerror(4);
+        return -1;
         break;
     }
+
+    return 0;
 }
 
 void comment(char *input)
@@ -445,4 +454,54 @@ int reservedcheck(char *buffer)
     }
 
     return -1;
+}
+
+int numbertoken(char *input)
+{
+    //we know that the first char is a digit
+    //so, simply place it into the buffer
+    int index=0;
+    char buffer[MAX_NUMBER_LEN+1];
+    buffer[index] = input[char_index];
+
+    //update pointers
+    index++;
+    char_index++;
+
+    //get the next char
+    char curr_char = input[char_index];
+
+    //loop while we find digit characters
+    //and while we have not exceeded the number length
+    while (isdigit(curr_char) && index < 5)
+    {
+        buffer[index] = curr_char;
+        index++;
+        char_index++;
+        curr_char = input[char_index];
+    }
+
+    //check if the current char is digit and if it exceeded the number length limit
+    //if yes, then print lex error for number length
+    if(isdigit(curr_char) && index >= 5)
+    {
+        printlexerror(2);
+        return -1;
+    }
+
+    //check if the current char is alpha
+    //if yes, then print lex error for invalid identifier
+    if(isalpha(curr_char))
+    {
+        printlexerror(1);
+        return -1;
+    }
+
+    //it is a valid number
+    //so, store number
+    list[lex_index].type = numbersym;
+    strcpy(list[lex_index++].value, buffer);
+
+    return 0;
+    
 }
