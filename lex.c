@@ -41,11 +41,13 @@ lexeme *lexanalyzer(char *input, int printFlag)
     {
         if (isspace(input[char_index]))
         {
-            continue;
+            char_index++;
+            //continue;
         }
         else if (iscntrl(input[char_index]))
         {
-            continue;
+            char_index++;
+            //continue;
         }
         else if (isdigit(input[char_index]))
         {
@@ -69,9 +71,9 @@ lexeme *lexanalyzer(char *input, int printFlag)
                 return 0;
             }
         }
-        if(input[char_index] != EOF){
-            char_index++;
-        }
+        //if(input[char_index] != EOF){
+        //    char_index++;
+        //}
     }
 
     if (printFlag)
@@ -247,7 +249,7 @@ int symboltoken(char *input)
         if (input[char_index + 1] == '=')
         {
             list[lex_index++].type = assignsym;
-            char_index++;
+            char_index = char_index + 2;
         }
         else
         {
@@ -267,7 +269,7 @@ int symboltoken(char *input)
         if (input[char_index + 1] == '=')
         {
             list[lex_index++].type = eqlsym;
-            char_index++;
+            char_index = char_index + 2;
         }
         else
         {
@@ -280,12 +282,12 @@ int symboltoken(char *input)
         if (input[char_index + 1] == '>')
         {
             list[lex_index++].type = neqsym;
-            char_index++;
+            char_index = char_index + 2;
         }
         else if (input[char_index + 1] == '=')
         {
             list[lex_index++].type = leqsym;
-            char_index++;
+            char_index = char_index + 2;
         }
         else
         {
@@ -297,7 +299,7 @@ int symboltoken(char *input)
         if (input[char_index + 1] == '=')
         {
             list[lex_index++].type = geqsym;
-            char_index++;
+            char_index = char_index + 2;
         }
         else
         {
@@ -339,6 +341,8 @@ int symboltoken(char *input)
         break;
     }
 
+    char_index++;
+
     return 0;
 }
 
@@ -350,6 +354,14 @@ void comment(char *input)
     {
         char_index++;
         curr_char = input[char_index];
+    }
+
+    if(input[char_index] != '\r' && input[char_index + 1] != '\n')
+    {
+        char_index = char_index + 2;
+    }
+    else{
+        char_index++;
     }
 }
 
