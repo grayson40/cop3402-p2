@@ -73,7 +73,7 @@ lexeme *lexanalyzer(char *input, int printFlag)
         }
     }
 
-    if (printFlag==0)
+    if (printFlag)
         printtokens();
     list[lex_index++].type = -1;
     return list;
