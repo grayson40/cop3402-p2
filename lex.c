@@ -53,14 +53,14 @@ lexeme *lexanalyzer(char *input, int printFlag)
         {
             if(numbertoken(input)==-1)
             {
-                return 0;
+                return NULL;
             }
         }
         else if (isalpha(input[char_index]))
         {
             if(alphatoken(input)==-1)
             {
-                return 0;
+                return NULL;
             }
             
         }
@@ -68,15 +68,12 @@ lexeme *lexanalyzer(char *input, int printFlag)
         {
             if(symboltoken(input)==-1)
             {
-                return 0;
+                return NULL;
             }
         }
-        //if(input[char_index] != EOF){
-        //    char_index++;
-        //}
     }
 
-    if (printFlag)
+    if (printFlag==0)
         printtokens();
     list[lex_index++].type = -1;
     return list;
@@ -250,6 +247,7 @@ int symboltoken(char *input)
         {
             list[lex_index++].type = assignsym;
             char_index = char_index + 2;
+            return 0;
         }
         else
         {
@@ -270,6 +268,7 @@ int symboltoken(char *input)
         {
             list[lex_index++].type = eqlsym;
             char_index = char_index + 2;
+            return 0;
         }
         else
         {
@@ -283,11 +282,13 @@ int symboltoken(char *input)
         {
             list[lex_index++].type = neqsym;
             char_index = char_index + 2;
+            return 0;
         }
         else if (input[char_index + 1] == '=')
         {
             list[lex_index++].type = leqsym;
             char_index = char_index + 2;
+            return 0;
         }
         else
         {
@@ -300,6 +301,7 @@ int symboltoken(char *input)
         {
             list[lex_index++].type = geqsym;
             char_index = char_index + 2;
+            return 0;
         }
         else
         {
@@ -324,6 +326,7 @@ int symboltoken(char *input)
         {
             char_index = char_index + 2;
             comment(input);
+            return 0;
         }
         else
         {
@@ -350,19 +353,15 @@ void comment(char *input)
 {
     char curr_char = input[char_index];
     // Loop until new line or end of file
-    while (curr_char != '\n' || (input[char_index] != '\r' && input[char_index + 1] != '\n') || curr_char != '\0')
+    while (curr_char != '\n' && curr_char != '\r' && curr_char != '\0')
     {
         char_index++;
         curr_char = input[char_index];
     }
-
-    if(input[char_index] != '\r' && input[char_index + 1] != '\n')
-    {
-        char_index = char_index + 2;
-    }
-    else{
-        char_index++;
-    }
+    if(curr_char != '\0'){
+    	char_index++;
+	}
+	return;
 }
 
 int alphatoken(char *input)
@@ -370,7 +369,7 @@ int alphatoken(char *input)
     //we know that the first char is alpha
     //so, simply place it into the buffer
     int index=0;
-    char buffer[MAX_IDENT_LEN+1];
+    char buffer[MAX_IDENT_LEN+1] = "";
     buffer[index] = input[char_index];
 
     //update pointers
@@ -473,7 +472,7 @@ int numbertoken(char *input)
     //we know that the first char is a digit
     //so, simply place it into the buffer
     int index=0;
-    char buffer[MAX_NUMBER_LEN+1];
+    char buffer[MAX_NUMBER_LEN+1]="";
     buffer[index] = input[char_index];
 
     //update pointers
