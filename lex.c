@@ -1,3 +1,11 @@
+/*
+    COP3402 Project 2
+    Professor Almanki
+    Group Members:
+        Grayson Crozier
+        Pedro Henrique Sotto-Mayor Pereira da Silva
+        Mohammad Abdulwahhab
+*/
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
